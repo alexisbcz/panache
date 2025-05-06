@@ -22,7 +22,7 @@ func main() {
 		exit.WithErr(err)
 	}
 
-	mux := router.New()
+	mux := router.New(dbpool)
 	addr := env.GetVar("HTTP_ADDR", ":3000")
 	slog.Info("http server listening for requests", "addr", addr)
 	if err := http.ListenAndServe(addr, mux); err != nil {

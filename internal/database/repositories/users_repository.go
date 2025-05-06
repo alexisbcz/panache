@@ -27,8 +27,8 @@ func NewUsersRepository(dbpool *pgxpool.Pool) UsersRepository {
 
 func (r *usersRepository) Store(ctx context.Context, user *models.User) error {
 	query := `
-		INSERT INTO users (email, password, created_at, updated_at)
-		VALUES ($1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+		INSERT INTO users (email, password)
+		VALUES ($1, $2)
 		RETURNING id, created_at, updated_at
 	`
 

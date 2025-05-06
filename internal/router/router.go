@@ -2,36 +2,55 @@ package router
 
 import (
 	"fmt"
+	"io/fs"
 	"net/http"
 
 	"github.com/alexisbcz/panache/internal/controllers"
+	"github.com/alexisbcz/panache/internal/database/repositories"
+	"github.com/alexisbcz/panache/internal/public"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func New() *http.ServeMux {
+func New(dbpool *pgxpool.Pool) *http.ServeMux {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "404 Error — this page does not exist", http.StatusNotFound)
-	})
+
+	// Use fs.Sub to strip the "assets" prefix from the embedded FS
+	assetsFS, err := fs.Sub(public.FS, "assets")
+	if err != nil {
+		panic(fmt.Errorf("failed to sub fs: %w", err))
+	}
+
+	// Serve embedded files under /assets/
+	mux.Handle("/", http.StripPrefix("/", http.FileServer(http.FS(assetsFS))))
+
 	mux.HandleFunc("GET /{$}", makeHandler(func(w http.ResponseWriter, r *http.Request) error {
-		fmt.Fprint(w, "hello, world")
+		_, err := fmt.Fprint(w, "this is my home page...")
+		if err != nil {
+			return err
+		}
+
+		// ...
+
 		return nil
 	}))
 
-	signUpController := controllers.NewSignUpController()
+	usersRepository := repositories.NewUsersRepository(dbpool)
+
+	signUpController := controllers.NewSignUpController(usersRepository)
 	mux.HandleFunc("GET /auth/sign_up/{$}", makeHandler(signUpController.Show))
 	mux.HandleFunc("POST /auth/sign_up/{$}", makeHandler(signUpController.Handle))
 
-	signInController := controllers.NewSignInController()
+	signInController := controllers.NewSignInController(usersRepository)
 	mux.HandleFunc("GET /auth/sign_in/{$}", makeHandler(signInController.Show))
 	mux.HandleFunc("POST /auth/sign_in/{$}", makeHandler(signInController.Handle))
 
-	forgotPassword := controllers.NewForgotPasswordController()
-	mux.HandleFunc("GET /auth/forgot_password/{$}", makeHandler(forgotPassword.Show))
-	mux.HandleFunc("POST /auth/forgot_password/{$}", makeHandler(forgotPassword.Handle))
+	forgotPasswordController := controllers.NewForgotPasswordController(usersRepository)
+	mux.HandleFunc("GET /auth/forgot_password/{$}", makeHandler(forgotPasswordController.Show))
+	mux.HandleFunc("POST /auth/forgot_password/{$}", makeHandler(forgotPasswordController.Handle))
 
-	resetPassword := controllers.NewResetPasswordController()
-	mux.HandleFunc("GET /auth/reset_password/{$}", makeHandler(resetPassword.Show))
-	mux.HandleFunc("POST /auth/reset_password/{$}", makeHandler(resetPassword.Handle))
+	resetPasswordController := controllers.NewResetPasswordController(usersRepository)
+	mux.HandleFunc("GET /auth/reset_password/{$}", makeHandler(resetPasswordController.Show))
+	mux.HandleFunc("POST /auth/reset_password/{$}", makeHandler(resetPasswordController.Handle))
 
 	return mux
 }

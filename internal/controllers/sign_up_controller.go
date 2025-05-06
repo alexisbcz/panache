@@ -1,17 +1,40 @@
 package controllers
 
-import "net/http"
+import (
+	"net/http"
 
-type SignUpController struct{}
+	"github.com/alexisbcz/panache/internal/database/models"
+	"github.com/alexisbcz/panache/internal/database/repositories"
+	"github.com/alexisbcz/panache/internal/views/pages"
+)
 
-func NewSignUpController() *SignUpController {
-	return &SignUpController{}
+type SignUpController struct {
+	usersRepository repositories.UsersRepository
+}
+
+func NewSignUpController(usersRepository repositories.UsersRepository) *SignUpController {
+	return &SignUpController{
+		usersRepository: usersRepository,
+	}
 }
 
 func (c *SignUpController) Show(w http.ResponseWriter, r *http.Request) error {
-	return nil
+	return pages.SignUpPage().Render(w)
 }
 
 func (c *SignUpController) Handle(w http.ResponseWriter, r *http.Request) error {
+	if err := r.ParseForm(); err != nil {
+		return err
+	}
+
+	if err := c.usersRepository.Store(r.Context(), &models.User{
+		Email:    r.FormValue("email"),
+		Password: r.FormValue("password"),
+	}); err != nil {
+		return err
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+
 	return nil
 }

@@ -5,6 +5,7 @@ go 1.24.2
 require (
 	github.com/alexisbcz/x v0.1.0
 	github.com/jackc/pgx/v5 v5.7.4
+	maragu.dev/gomponents v1.1.0
 )
 
 replace github.com/alexisbcz/x => ../x

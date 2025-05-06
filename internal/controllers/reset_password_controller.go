@@ -1,11 +1,19 @@
 package controllers
 
-import "net/http"
+import (
+	"net/http"
 
-type ResetPasswordController struct{}
+	"github.com/alexisbcz/panache/internal/database/repositories"
+)
 
-func NewResetPasswordController() *ResetPasswordController {
-	return &ResetPasswordController{}
+type ResetPasswordController struct {
+	usersRepository repositories.UsersRepository
+}
+
+func NewResetPasswordController(usersRepository repositories.UsersRepository) *ResetPasswordController {
+	return &ResetPasswordController{
+		usersRepository: usersRepository,
+	}
 }
 
 func (c *ResetPasswordController) Show(w http.ResponseWriter, r *http.Request) error {

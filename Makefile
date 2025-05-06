@@ -25,9 +25,12 @@ migration-down:
 migration-fresh: migration-down migration-up
 	@echo "🔄 Database freshed!"
 
+css:
+	npx @tailwindcss/cli -i ./internal/views/styles.css -o ./internal/public/assets/styles.css --watch
+
 seed:
-	@echo "🌱 Seeding database with philosophers..."
-	go run ./cmd/seed
+	@echo "🌱 Seeding database..."
+	@go run ./cmd/seed
 	@echo "✨ Database successfully seeded!"
 
 clean: db-down

@@ -1,15 +1,24 @@
 package controllers
 
-import "net/http"
+import (
+	"net/http"
 
-type SignInController struct{}
+	"github.com/alexisbcz/panache/internal/database/repositories"
+	"github.com/alexisbcz/panache/internal/views/pages"
+)
 
-func NewSignInController() *SignInController {
-	return &SignInController{}
+type SignInController struct {
+	usersRepository repositories.UsersRepository
+}
+
+func NewSignInController(usersRepository repositories.UsersRepository) *SignInController {
+	return &SignInController{
+		usersRepository: usersRepository,
+	}
 }
 
 func (c *SignInController) Show(w http.ResponseWriter, r *http.Request) error {
-	return nil
+	return pages.SignInPage().Render(w)
 }
 
 func (c *SignInController) Handle(w http.ResponseWriter, r *http.Request) error {
