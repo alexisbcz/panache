@@ -10,6 +10,6 @@ func SignInPage() g.Node {
 	return layouts.AuthLayout(layouts.AuthLayoutProps{
 		Title: "Reset Password",
 	}, html.Div(
-		html.H1(html.Class("text-red-600"), g.Text("Hello, World")),
+		html.H1(html.Class("text-red-600"), g.Text("Hello, Refresher")),
 	))
 }

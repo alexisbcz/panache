@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/alexisbcz/panache/internal/database/repositories"
+	"github.com/alexisbcz/panache/internal/views/pages"
 )
 
 type ResetPasswordController struct {
@@ -17,7 +18,7 @@ func NewResetPasswordController(usersRepository repositories.UsersRepository) *R
 }
 
 func (c *ResetPasswordController) Show(w http.ResponseWriter, r *http.Request) error {
-	return nil
+	return pages.ResetPasswordPage().Render(w)
 }
 
 func (c *ResetPasswordController) Handle(w http.ResponseWriter, r *http.Request) error {

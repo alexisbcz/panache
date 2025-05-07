@@ -3,6 +3,8 @@
 setup:
 	@echo "🔧 Installing tern for database migrations..."
 	go install github.com/jackc/tern/v2@latest
+	@echo "🔧 Installing Reflex for hot reload"
+	go install github.com/cespare/reflex@latest
 	@echo "📦 Installing dependencies..."
 	go mod tidy
 
@@ -27,6 +29,9 @@ migration-fresh: migration-down migration-up
 
 css:
 	npx @tailwindcss/cli -i ./internal/views/styles.css -o ./internal/public/assets/styles.css --watch
+
+dev:
+	reflex --start-service -- sh -c 'go run ./cmd/http'
 
 seed:
 	@echo "🌱 Seeding database..."
