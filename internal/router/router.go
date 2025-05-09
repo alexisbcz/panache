@@ -44,6 +44,9 @@ func New(dbpool *pgxpool.Pool) *http.ServeMux {
 	mux.HandleFunc("GET /reset-password/{$}", makeHandler(resetPasswordController.Show))
 	mux.HandleFunc("POST /reset-password/{$}", makeHandler(resetPasswordController.Handle))
 
+	containersController := controllers.NewContainersController()
+	mux.HandleFunc("GET /containers/{$}", makeHandler(containersController.Index))
+
 	return mux
 }
 
